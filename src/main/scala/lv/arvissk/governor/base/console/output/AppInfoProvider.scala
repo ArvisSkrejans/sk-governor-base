@@ -14,6 +14,8 @@ object AppInfoProvider {
 
   final case object NotifyModuleInit
 
+  final case object NotifyModuleShutdown
+
   final case object GiveInitShutdownMessage
 
   final case object GiveCompleteShutdownMessage
@@ -28,7 +30,8 @@ class AppInfoProvider(printerActor: ActorRef) extends Actor {
     "initialWelcome" -> "SK-Governor 0.1 started",
     "shutdownInitMessage" -> "SK-Governor shut down started..",
     "shutdownCompleteMessage" -> "SK-Governor shut down complete.",
-    "moduleInit" -> "Initializing modules.."
+    "moduleInit" -> "Initializing modules..",
+    "moduleShutdown" -> "Stopping modules.."
   )
 
   def receive = {
@@ -36,6 +39,8 @@ class AppInfoProvider(printerActor: ActorRef) extends Actor {
       printerActor ! PrintToConsole(systemMessages("initialWelcome"))
     case NotifyModuleInit =>
       printerActor ! PrintDecoratedEventToConsole(systemMessages("moduleInit"))
+    case NotifyModuleShutdown =>
+      printerActor ! PrintDecoratedEventToConsole(systemMessages("moduleShutdown"))
     case GiveInitShutdownMessage =>
       printerActor ! PrintDecoratedEventToConsole(systemMessages("shutdownInitMessage"))
     case GiveCompleteShutdownMessage =>
