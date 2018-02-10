@@ -1,28 +1,24 @@
+/**
+  * Dummy temperature like sensor reading stream for testing
+  **/
 package lv.arvissk.governor.base.modules.sensors
 
 import akka.actor._
-import akka.stream.{OverflowStrategy, DelayOverflowStrategy, ActorMaterializer, ThrottleMode}
+import akka.stream._
 import akka.stream.scaladsl._
 import scala.concurrent._
-import scala.util.Random
 import scala.concurrent.duration._
-import lv.arvissk.governor.base.modules.sensors.SensorsHandler.SensorInitSuccessful
+import scala.util.Random
 
 object DummySensor {
 
   def props(sensorName: String): Props = Props(new DummySensor(sensorName: String))
 
-  final case object SetupSensor
-
-  final case object StreamData
-
-  case class TimestampedReading(id: Integer, processingTimestamp: Long)
-
 }
 
 class DummySensor(sensorName: String) extends Actor {
 
-  import DummySensor._
+  import SensorsHandler._
 
   def receive = {
     case SetupSensor =>
