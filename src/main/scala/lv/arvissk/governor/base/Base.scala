@@ -1,14 +1,14 @@
 
 package lv.arvissk.governor.base
 
-import akka.actor.{ActorSystem, ActorRef}
+import akka.actor._
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import lv.arvissk.governor.base.console.output.Printer
 import lv.arvissk.governor.base.console.output.AppInfoProvider
 import lv.arvissk.governor.base.console.output.AppInfoProvider._
-import lv.arvissk.governor.base.modules.Modules
-import lv.arvissk.governor.base.modules.Modules.{Start, Stop}
+import lv.arvissk.governor.base.modules.ModuleHandler
+import lv.arvissk.governor.base.modules.ModuleHandler.{InitAllModules, ShutdownAllModules}
 
 object Base extends App {
 
@@ -23,19 +23,19 @@ object Base extends App {
     system.actorOf(AppInfoProvider.props(printer), "appInfoProviderActor")
   //init module handling actor
   val moduleHandler: ActorRef =
-    system.actorOf(Modules.props(printer), "moduleHandlerActor")
+    system.actorOf(ModuleHandler.props(printer), "moduleHandlerActor")
 
   //start the application and all the modules
   appInfoProvider ! GiveInitialWelcome
   appInfoProvider ! NotifyModuleInit
-  moduleHandler ! Start
+  moduleHandler ! InitAllModules
 
   //handle graceful app and module shutdown
   scala.sys.addShutdownHook {
 
     appInfoProvider ! GiveInitShutdownMessage
     appInfoProvider ! NotifyModuleShutdown
-    moduleHandler ! Stop
+    moduleHandler ! ShutdownAllModules
     appInfoProvider ! GiveCompleteShutdownMessage
     system.terminate()
     Await.result(system.whenTerminated, 30 seconds)
