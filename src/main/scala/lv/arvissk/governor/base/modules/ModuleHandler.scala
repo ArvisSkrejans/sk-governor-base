@@ -6,9 +6,9 @@ package lv.arvissk.governor.base.modules
 import akka.actor._
 import scala.language.postfixOps
 import lv.arvissk.governor.base.console.output.Printer.PrintDecoratedEventToConsole
-import lv.arvissk.governor.base.modules.sensors.Sensors
-import lv.arvissk.governor.base.modules.logging.Logging
-import lv.arvissk.governor.base.modules.processing.Processing
+import lv.arvissk.governor.base.modules.sensors.SensorsHandler
+import lv.arvissk.governor.base.modules.logging.LoggingHandler
+import lv.arvissk.governor.base.modules.processing.ProcessingHandler
 
 object ModuleHandler {
 
@@ -27,9 +27,9 @@ object ModuleHandler {
 class ModuleHandler(printerActor: ActorRef) extends Actor {
 
   import ModuleHandler._
-  import Sensors._
-  import Logging._
-  import Processing._
+  import SensorsHandler._
+  import LoggingHandler._
+  import ProcessingHandler._
 
   val allModules = List("sensors", "logging", "processing")
 
@@ -38,13 +38,13 @@ class ModuleHandler(printerActor: ActorRef) extends Actor {
       for (moduleName <- allModules) {
         moduleName match {
           case "sensors" =>
-            val sensorsActor: ActorRef = context.actorOf(Props[Sensors], "SensorsActor")
+            val sensorsActor: ActorRef = context.actorOf(SensorsHandler.props(printerActor), "Sensors")
             sensorsActor ! InitSensors
           case "logging" =>
-            val loggingActor: ActorRef = context.actorOf(Props[Logging], "LoggingActor")
+            val loggingActor: ActorRef = context.actorOf(Props[LoggingHandler], "Logging")
             loggingActor ! InitLogging
           case "processing" =>
-            val processingActor: ActorRef = context.actorOf(Props[Processing], "ProcessingActor")
+            val processingActor: ActorRef = context.actorOf(Props[ProcessingHandler], "Processing")
             processingActor ! InitProcessing
         }
       }

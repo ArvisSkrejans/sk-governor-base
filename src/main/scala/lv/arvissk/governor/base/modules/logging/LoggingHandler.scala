@@ -6,9 +6,9 @@ package lv.arvissk.governor.base.modules.logging
 import akka.actor._
 import lv.arvissk.governor.base.modules.ModuleHandler.ReportStartupSuccessful
 
-object Logging {
+object LoggingHandler {
 
-  def props: Props = Props[Logging]
+  def props: Props = Props[LoggingHandler]
 
   final case object InitLogging
 
@@ -16,9 +16,9 @@ object Logging {
 
 }
 
-class Logging() extends Actor {
+class LoggingHandler() extends Actor {
 
-  import Logging._
+  import LoggingHandler._
 
   def receive = {
     case InitLogging =>

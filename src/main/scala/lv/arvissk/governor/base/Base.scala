@@ -16,14 +16,14 @@ object Base extends App {
   val system: ActorSystem = ActorSystem("skGovernor")
 
   //init console console output actor
-  val printer: ActorRef = system.actorOf(Printer.props, "printerActor")
+  val printer: ActorRef = system.actorOf(Printer.props, "printer")
 
   //init app status info handling actor
   val appInfoProvider: ActorRef =
-    system.actorOf(AppInfoProvider.props(printer), "appInfoProviderActor")
+    system.actorOf(AppInfoProvider.props(printer), "appInfoProvider")
   //init module handling actor
   val moduleHandler: ActorRef =
-    system.actorOf(ModuleHandler.props(printer), "moduleHandlerActor")
+    system.actorOf(ModuleHandler.props(printer), "moduleHandler")
 
   //start the application and all the modules
   appInfoProvider ! GiveInitialWelcome

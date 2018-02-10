@@ -6,9 +6,9 @@ package lv.arvissk.governor.base.modules.processing
 import akka.actor._
 import lv.arvissk.governor.base.modules.ModuleHandler.ReportStartupSuccessful
 
-object Processing {
+object ProcessingHandler {
 
-  def props: Props = Props[Processing]
+  def props: Props = Props[ProcessingHandler]
 
   final case object InitProcessing
 
@@ -16,9 +16,9 @@ object Processing {
 
 }
 
-class Processing() extends Actor {
+class ProcessingHandler() extends Actor {
 
-  import Processing._
+  import ProcessingHandler._
 
   def receive = {
     case InitProcessing =>
