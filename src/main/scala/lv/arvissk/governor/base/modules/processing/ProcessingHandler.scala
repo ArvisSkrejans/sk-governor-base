@@ -6,7 +6,7 @@ package lv.arvissk.governor.base.modules.processing
 import akka.actor._
 import lv.arvissk.governor.base.modules.ModuleProtocol.ModuleStartupSuccessCallback
 
-object ProcessingHandler {
+object ProcessingProtocol {
 
   def props: Props = Props[ProcessingHandler]
 
@@ -18,7 +18,7 @@ object ProcessingHandler {
 
 class ProcessingHandler() extends Actor {
 
-  import ProcessingHandler._
+  import ProcessingProtocol._
 
   def receive = {
     case InitProcessing =>

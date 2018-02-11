@@ -7,6 +7,7 @@ import akka.actor._
 import java.util
 import org.apache.kafka.common.serialization.{Deserializer, Serializer, StringDeserializer, StringSerializer}
 import play.api.libs.json.{Format, Json, Reads, Writes}
+import lv.arvissk.governor.base.modules.sensors.SensorsProtocol._
 
 object LoggingProtocol {
 
@@ -16,11 +17,9 @@ object LoggingProtocol {
 
   case object ShutdownLogging
 
-  case class LogStream(streamProviderActor: ActorRef)
+  case class LogTimestampedSensorReading(reading: TimestampedReading)
 
-  case class LogMessage(name: String, value: String, timestamp: Long)
-
-  implicit val LogMessageFormat: Format[LogMessage] = Json.format[LogMessage]
+  implicit val LogMessageFormat: Format[TimestampedReading] = Json.format[TimestampedReading]
 }
 
 class JsonDeserializer[A: Reads] extends Deserializer[A] {

@@ -4,10 +4,18 @@
 package lv.arvissk.governor.base.modules.sensors
 
 import akka.actor._
+import akka.util.Timeout
+import scala.util.{Success, Failure}
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 import lv.arvissk.governor.base.console.output.PrinterProtocol.PrintDecoratedEventToConsole
 import lv.arvissk.governor.base.modules.ModuleProtocol._
+import lv.arvissk.governor.base.modules.logging.LoggingProtocol._
 
-object SensorsHandler {
+import scala.util.{Failure, Success}
+
+object SensorsProtocol {
 
   def props(printerActor: ActorRef): Props = Props(new SensorsHandler(printerActor))
 
@@ -15,21 +23,23 @@ object SensorsHandler {
 
   case object ShutdownSensors
 
-  case class SensorInitSuccessful(sensor: String)
+  case class SensorInitSuccessful(sensorName: String)
 
-  case class SensorInitFailed(sensor: String)
+  case class SensorInitFailed(sensorName: String)
 
   case object StreamData
 
-  case object SetupSensor
+  case class PushInitializedSensorDataToLog(reading: TimestampedReading, sensorName: String)
 
-  case class TimestampedReading(id: Integer, processingTimestamp: Long)
+  case object InitSensor
+
+  case class TimestampedReading(name: String, value: Int, timestamp: Long, sensorName: String)
 
 }
 
 class SensorsHandler(printerActor: ActorRef) extends Actor {
 
-  import SensorsHandler._
+  import SensorsProtocol._
 
   //TODO: take enabled sensor list from config
   val enabledSensors = List("dummySensor")
@@ -42,19 +52,29 @@ class SensorsHandler(printerActor: ActorRef) extends Actor {
         sensorName match {
           case "dummySensor" =>
             val dummySensor: ActorRef = context.actorOf(DummySensor.props("dummySensorTest"), "dummySensorTest")
-            dummySensor ! SetupSensor
+            dummySensor ! InitSensor
+            printerActor ! PrintDecoratedEventToConsole("Sensor: \"dummySensorTest\" initializing..")
         }
 
       }
       context.parent ! ModuleStartupSuccessCallback("sensors")
 
+    case SensorInitSuccessful(sensorName: String) =>
+      printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorName + "\" initialized.")
+
+    case SensorInitFailed(sensorName: String) =>
+      printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorName + "\" init failed.")
+
     case ShutdownSensors =>
     //TODO: Implement sensor shutdown logic
 
-    case SensorInitSuccessful(sensorName: String) =>
+    case PushInitializedSensorDataToLog(reading: TimestampedReading, sensorName: String) =>
 
-      printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorName + "\" initialized.")
-      context.parent ! LogSensorData(sensorName)
+      implicit val timeout = Timeout(5 seconds)
+      context.actorSelection("/user/moduleHandler/Logging").resolveOne().onComplete {
+        case Success(loggingActor) =>
+          loggingActor ! LogTimestampedSensorReading(reading)
+        case Failure(error) => println(error)
+      }
   }
-
 }

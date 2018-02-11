@@ -5,15 +5,15 @@ package lv.arvissk.governor.base.modules.logging
 
 import akka.actor._
 import com.typesafe.config.ConfigFactory
-import cakesolutions.kafka.akka.{KafkaProducerActor, ProducerRecords}
+import cakesolutions.kafka.akka.{KafkaProducerActor}
 import cakesolutions.kafka.{KafkaConsumer, KafkaProducer, KafkaProducerRecord}
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import lv.arvissk.governor.base.modules.ModuleProtocol.ModuleStartupSuccessCallback
+import lv.arvissk.governor.base.modules.sensors.SensorsProtocol._
 
 class LoggingHandler() extends Actor {
 
   import LoggingProtocol._
-  import lv.arvissk.governor.base.modules.sensors.SensorsHandler._
 
   def receive = {
     case InitLogging =>
@@ -22,20 +22,22 @@ class LoggingHandler() extends Actor {
     case ShutdownLogging =>
     //TODO: implement clean login shutdown
 
-    case LogStream(streamProviderActor: ActorRef) =>
+    case LogTimestampedSensorReading(reading: TimestampedReading) =>
       val kafkaProducerActor = initKafkaProducerActor
-      streamProviderActor ! StreamData
+
+      def uuid = java.util.UUID.randomUUID.toString
+
+      kafkaProducerActor ! KafkaProducerRecord("sensorReadings", uuid, reading)
 
   }
 
-  def initKafkaProducerActor: ActorRef =
-  {
+  def initKafkaProducerActor: ActorRef = {
     val kafkaProducerConf = KafkaProducer.Conf(
       bootstrapServers = ConfigFactory.load().getString("app.kafka.bootstrap.servers"),
       keySerializer = new StringSerializer(),
-      valueSerializer = new JsonSerializer[LogMessage])
+      valueSerializer = new JsonSerializer[TimestampedReading])
 
-     context.actorOf(KafkaProducerActor.props( kafkaProducerConf))
+    context.actorOf(KafkaProducerActor.props(kafkaProducerConf))
   }
 
 }

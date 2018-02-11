@@ -18,21 +18,20 @@ object DummySensor {
 
 class DummySensor(sensorName: String) extends Actor {
 
-  import SensorsHandler._
+  import SensorsProtocol._
+
 
   def receive = {
-    case SetupSensor =>
-      //TODO: set up sensor parameters, check sensor status.
+    case InitSensor =>
       sender ! SensorInitSuccessful(sensorName)
-    case StreamData =>
-      receiveStream()
+      pushDataUpstream(sender)
   }
 
-  def sensorSink =
+  def sensorPushSink(sender: ActorRef) =
     Flow[TimestampedReading]
       .buffer(1, OverflowStrategy.dropBuffer)
       .delay(1 seconds, DelayOverflowStrategy.backpressure)
-      .to(Sink.foreach(e => println(e)))
+      .to(Sink.foreach(e => sender ! PushInitializedSensorDataToLog(e, sensorName)))
 
   def randomIntSource =
     Source.fromIterator(() => Iterator.continually(Random.nextInt(35)))
@@ -44,19 +43,19 @@ class DummySensor(sensorName: String) extends Actor {
     mode = ThrottleMode.Shaping
   )
 
-  def enrichWithTimestamp =
+  def processStream =
     Flow[Int]
       .map { e =>
-        TimestampedReading(e, System.currentTimeMillis())
+        TimestampedReading("temperature", e, System.currentTimeMillis(), sensorName)
       }
 
-  def receiveStream(): Unit = {
+  def pushDataUpstream(sender: ActorRef): Unit = {
     implicit val materializer = ActorMaterializer()
 
     randomIntSource
       .via(throttlingFlow)
-      .via(enrichWithTimestamp)
-      .to(sensorSink)
+      .via(processStream)
+      .to(sensorPushSink(sender))
       .run()
   }
 
