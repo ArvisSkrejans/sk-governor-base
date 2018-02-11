@@ -4,24 +4,24 @@
 package lv.arvissk.governor.base.modules.sensors
 
 import akka.actor._
-import lv.arvissk.governor.base.console.output.Printer.PrintDecoratedEventToConsole
-import lv.arvissk.governor.base.modules.ModuleHandler._
+import lv.arvissk.governor.base.console.output.PrinterProtocol.PrintDecoratedEventToConsole
+import lv.arvissk.governor.base.modules.ModuleProtocol._
 
 object SensorsHandler {
 
   def props(printerActor: ActorRef): Props = Props(new SensorsHandler(printerActor))
 
-  final case object InitSensors
+  case object InitSensors
 
-  final case object ShutdownSensors
+  case object ShutdownSensors
 
-  final case class SensorInitSuccessful(sensor: String)
+  case class SensorInitSuccessful(sensor: String)
 
-  final case class SensorInitFailed(sensor: String)
+  case class SensorInitFailed(sensor: String)
 
-  final case object StreamData
+  case object StreamData
 
-  final case object SetupSensor
+  case object SetupSensor
 
   case class TimestampedReading(id: Integer, processingTimestamp: Long)
 

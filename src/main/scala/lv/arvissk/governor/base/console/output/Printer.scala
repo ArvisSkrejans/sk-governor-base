@@ -7,18 +7,18 @@ package lv.arvissk.governor.base.console.output
 import akka.actor.{Actor, ActorLogging, Props}
 
 
-object Printer {
+object PrinterProtocol {
 
   def props: Props = Props[Printer]
 
-  final case class PrintToConsole(data: String)
-  final case class PrintDecoratedEventToConsole(data: String)
+  case class PrintToConsole(data: String)
+  case class PrintDecoratedEventToConsole(data: String)
 
 }
 
 class Printer extends Actor with ActorLogging {
 
-  import Printer._
+  import PrinterProtocol._
 
   val eventDecorator: String = "[*] "
 

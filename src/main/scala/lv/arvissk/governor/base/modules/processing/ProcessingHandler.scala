@@ -4,15 +4,15 @@
 package lv.arvissk.governor.base.modules.processing
 
 import akka.actor._
-import lv.arvissk.governor.base.modules.ModuleHandler.ModuleStartupSuccessCallback
+import lv.arvissk.governor.base.modules.ModuleProtocol.ModuleStartupSuccessCallback
 
 object ProcessingHandler {
 
   def props: Props = Props[ProcessingHandler]
 
-  final case object InitProcessing
+  case object InitProcessing
 
-  final case object ShutdownProcessing
+  case object ShutdownProcessing
 
 }
 

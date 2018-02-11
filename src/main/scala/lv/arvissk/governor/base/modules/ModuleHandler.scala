@@ -10,33 +10,33 @@ import scala.util.{Success, Failure}
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import lv.arvissk.governor.base.console.output.Printer.PrintDecoratedEventToConsole
+import lv.arvissk.governor.base.console.output.PrinterProtocol.PrintDecoratedEventToConsole
 import lv.arvissk.governor.base.modules.sensors._
-import lv.arvissk.governor.base.modules.logging.LoggingHandler
-import lv.arvissk.governor.base.modules.processing.ProcessingHandler
+import lv.arvissk.governor.base.modules.logging._
+import lv.arvissk.governor.base.modules.processing._
 
 
-object ModuleHandler {
+object ModuleProtocol {
 
   def props(printerActor: ActorRef): Props = Props(new ModuleHandler(printerActor))
 
-  final case object InitAllModules
+  case object InitAllModules
 
-  final case object ShutdownAllModules
+  case object ShutdownAllModules
 
-  final case class ModuleStartupSuccessCallback(module: String)
+  case class ModuleStartupSuccessCallback(module: String)
 
-  final case class ModuleStartupFailureCallback(module: String)
+  case class ModuleStartupFailureCallback(module: String)
 
-  final case class LogSensorData(sensorName: String)
+  case class LogSensorData(sensorName: String)
 
 }
 
 class ModuleHandler(printerActor: ActorRef) extends Actor {
 
-  import ModuleHandler._
+  import ModuleProtocol._
   import SensorsHandler._
-  import LoggingHandler._
+  import LoggingProtocol._
   import ProcessingHandler._
 
   val allModules = List("sensors", "logging", "processing")

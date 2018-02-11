@@ -4,23 +4,15 @@
 package lv.arvissk.governor.base.modules.logging
 
 import akka.actor._
-import lv.arvissk.governor.base.modules.ModuleHandler.ModuleStartupSuccessCallback
-
-object LoggingHandler {
-
-  def props: Props = Props[LoggingHandler]
-
-  final case object InitLogging
-
-  final case object ShutdownLogging
-
-  final case class LogStream(streamProviderActor: ActorRef)
-
-}
+import com.typesafe.config.ConfigFactory
+import cakesolutions.kafka.akka.{KafkaProducerActor, ProducerRecords}
+import cakesolutions.kafka.{KafkaConsumer, KafkaProducer, KafkaProducerRecord}
+import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
+import lv.arvissk.governor.base.modules.ModuleProtocol.ModuleStartupSuccessCallback
 
 class LoggingHandler() extends Actor {
 
-  import LoggingHandler._
+  import LoggingProtocol._
   import lv.arvissk.governor.base.modules.sensors.SensorsHandler._
 
   def receive = {
@@ -31,8 +23,19 @@ class LoggingHandler() extends Actor {
     //TODO: implement clean login shutdown
 
     case LogStream(streamProviderActor: ActorRef) =>
+      val kafkaProducerActor = initKafkaProducerActor
       streamProviderActor ! StreamData
 
+  }
+
+  def initKafkaProducerActor: ActorRef =
+  {
+    val kafkaProducerConf = KafkaProducer.Conf(
+      bootstrapServers = ConfigFactory.load().getString("app.kafka.bootstrap.servers"),
+      keySerializer = new StringSerializer(),
+      valueSerializer = new JsonSerializer[LogMessage])
+
+     context.actorOf(KafkaProducerActor.props( kafkaProducerConf))
   }
 
 }

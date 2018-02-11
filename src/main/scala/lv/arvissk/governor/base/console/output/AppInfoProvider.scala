@@ -4,27 +4,27 @@
 package lv.arvissk.governor.base.console.output
 
 import akka.actor.{Actor, ActorRef, Props}
-import lv.arvissk.governor.base.console.output.Printer.{PrintDecoratedEventToConsole, PrintToConsole}
+import lv.arvissk.governor.base.console.output.PrinterProtocol.{PrintDecoratedEventToConsole, PrintToConsole}
 
-object AppInfoProvider {
+object AppInfoProtocol {
 
   def props(printerActor: ActorRef): Props = Props(new AppInfoProvider(printerActor))
 
-  final case object GiveInitialWelcome
+  case object GiveInitialWelcome
 
-  final case object NotifyModuleInit
+  case object NotifyModuleInit
 
-  final case object NotifyModuleShutdown
+  case object NotifyModuleShutdown
 
-  final case object GiveInitShutdownMessage
+  case object GiveInitShutdownMessage
 
-  final case object GiveCompleteShutdownMessage
+  case object GiveCompleteShutdownMessage
 
 }
 
 class AppInfoProvider(printerActor: ActorRef) extends Actor {
 
-  import AppInfoProvider._
+  import AppInfoProtocol._
 
   val systemMessages: Map[String, String] = Map(
     "initialWelcome" -> "SK-Governor 0.1 started",
