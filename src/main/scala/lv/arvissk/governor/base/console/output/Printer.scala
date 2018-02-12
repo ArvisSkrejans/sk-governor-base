@@ -4,7 +4,7 @@
 
 package lv.arvissk.governor.base.console.output
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor._
 
 
 object PrinterProtocol {

@@ -37,6 +37,10 @@ object Base extends App {
     appInfoProvider ! NotifyModuleShutdown
     moduleHandler ! ShutdownAllModules
     appInfoProvider ! GiveCompleteShutdownMessage
+
+    moduleHandler ! PoisonPill
+    appInfoProvider ! PoisonPill
+    printer ! PoisonPill
     system.terminate()
     Await.result(system.whenTerminated, 30 seconds)
   }

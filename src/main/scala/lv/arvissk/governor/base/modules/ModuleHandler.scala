@@ -42,6 +42,7 @@ class ModuleHandler(printerActor: ActorRef) extends Actor {
 
       val processingActor: ActorRef = context.actorOf(Props[ProcessingHandler], "Processing")
       processingActor ! InitProcessing
+      processingActor ! ProcessSensorReadings
 
     case ModuleStartupSuccessCallback(moduleName: String) =>
       printerActor ! PrintDecoratedEventToConsole("Module: \"" + moduleName + "\" initialized")

@@ -29,7 +29,7 @@ object SensorsProtocol {
 
   case object StreamData
 
-  case class PushInitializedSensorDataToLog(reading: TimestampedReading, sensorName: String)
+  case class PushInitializedSensorDataToLog(reading: TimestampedReading)
 
   case object InitSensor
 
@@ -68,7 +68,7 @@ class SensorsHandler(printerActor: ActorRef) extends Actor {
     case ShutdownSensors =>
     //TODO: Implement sensor shutdown logic
 
-    case PushInitializedSensorDataToLog(reading: TimestampedReading, sensorName: String) =>
+    case PushInitializedSensorDataToLog(reading: TimestampedReading) =>
 
       implicit val timeout = Timeout(5 seconds)
       context.actorSelection("/user/moduleHandler/Logging").resolveOne().onComplete {

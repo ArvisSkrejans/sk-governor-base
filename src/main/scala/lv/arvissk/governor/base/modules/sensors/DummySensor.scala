@@ -31,7 +31,7 @@ class DummySensor(sensorName: String) extends Actor {
     Flow[TimestampedReading]
       .buffer(1, OverflowStrategy.dropBuffer)
       .delay(1 seconds, DelayOverflowStrategy.backpressure)
-      .to(Sink.foreach(e => sender ! PushInitializedSensorDataToLog(e, sensorName)))
+      .to(Sink.foreach(e => sender ! PushInitializedSensorDataToLog(e)))
 
   def randomIntSource =
     Source.fromIterator(() => Iterator.continually(Random.nextInt(35)))
