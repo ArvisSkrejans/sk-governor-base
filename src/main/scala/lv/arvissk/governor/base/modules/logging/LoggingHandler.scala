@@ -28,11 +28,8 @@ class LoggingHandler() extends Actor {
     case LogTimestampedSensorReading(reading: TimestampedReading) =>
 
       def uuid = java.util.UUID.randomUUID.toString
-      //kafkaProducerActor ! KafkaProducerRecord("sensorReadings", reading)
+
       kafkaProducerActor ! ProducerRecords(List(KafkaProducerRecord("sensorReadings", uuid, reading)))
-
-    //  kafkaConsumerActor ! Subscribe.AutoPartition(List("sensorReadings"))
-
   }
 
   def initKafkaProducerActor: ActorRef = {

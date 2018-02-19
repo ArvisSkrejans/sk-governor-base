@@ -6,6 +6,8 @@ scalaVersion := "2.12.4"
 
 lazy val akkaVersion = "2.5.9"
 
+val elastic4sVersion = "6.1.4"
+
 resolvers += Resolver.bintrayRepo("cakesolutions", "maven")
 
 libraryDependencies ++= Seq(
@@ -20,5 +22,10 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % "1.7.5",
   "org.slf4j" % "log4j-over-slf4j" % "1.7.25",
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "test",
-  "com.typesafe.play" %% "play-json" % "2.6.8"
+  "com.typesafe.play" %% "play-json" % "2.6.8",
+  "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test",
+  "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test",
+  "com.github.nscala-time" %% "nscala-time" % "2.18.0"
 )
