@@ -1,19 +1,22 @@
-/**
+/** Sensor handling actor.
+  *
   * Initializes various configured sensor inputs as an actor group that are accessible where needed.
-  **/
+  * Loads sensors from config.
+  */
 package lv.arvissk.governor.base.modules.sensors
 
-import akka.actor._
+import akka.actor.{Actor, ActorRef, Props}
 import akka.util.Timeout
 import scala.util.{Success, Failure}
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import com.typesafe.config.{Config, ConfigFactory}
+import pureconfig._
+import pureconfig.error.ConfigReaderFailures
 import lv.arvissk.governor.base.console.output.PrinterProtocol.PrintDecoratedEventToConsole
 import lv.arvissk.governor.base.modules.ModuleProtocol._
 import lv.arvissk.governor.base.modules.logging.LoggingProtocol._
-
-import scala.util.{Failure, Success}
 
 object SensorsProtocol {
 
@@ -35,46 +38,79 @@ object SensorsProtocol {
 
   case class TimestampedReading(name: String, value: Int, timestamp: Long, sensorName: String)
 
+  case class Areas(areas: Map[String, Area])
+
+  case class Area(
+                   areaName: String,
+                   temperature: List[Map[String, String]],
+                   humidity: List[Map[String, String]]
+                 )
+
 }
 
 class SensorsHandler(printerActor: ActorRef) extends Actor {
 
   import SensorsProtocol._
 
-  //TODO: take enabled sensor list from config
-  val enabledSensors = List("dummySensor")
-
   def receive = {
     case InitSensors =>
-      for (sensorName <- enabledSensors) {
 
-        //TODO: Implement sensor config init
-        sensorName match {
-          case "dummySensor" =>
-            val dummySensor: ActorRef = context.actorOf(DummySensor.props("dummySensorTest"), "dummySensorTest")
-            dummySensor ! InitSensor
-            printerActor ! PrintDecoratedEventToConsole("Sensor: \"dummySensorTest\" initializing..")
-        }
+      getConfiguredAreas match {
+        case Right(areaList) =>
 
+          for ((areaKey: String, area: Area) <- areaList.areas) {
+
+            for (sensorData <- area.temperature ++ area.humidity) {
+              loadSensorByDriver(sensorData, areaKey)
+            }
+          }
+
+        case Left(e) => throw new Exception("Failed loading area config!" + e.toString)
       }
+
       context.parent ! ModuleStartupSuccessCallback("sensors")
 
     case SensorInitSuccessful(sensorName: String) =>
-      printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorName + "\" initialized.")
+      printerActor ! PrintDecoratedEventToConsole("\"" + sensorName + "\" initialized.")
 
     case SensorInitFailed(sensorName: String) =>
-      printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorName + "\" init failed.")
+      printerActor ! PrintDecoratedEventToConsole("\"" + sensorName + "\" init failed.")
 
     case ShutdownSensors =>
     //TODO: Implement sensor shutdown logic
 
     case PushInitializedSensorDataToLog(reading: TimestampedReading) =>
 
-      implicit val timeout = Timeout(5 seconds)
+      implicit val timeout: Timeout = Timeout(5 seconds)
       context.actorSelection("/user/moduleHandler/Logging").resolveOne().onComplete {
         case Success(loggingActor) =>
           loggingActor ! LogTimestampedSensorReading(reading)
         case Failure(error) => println(error)
       }
+  }
+
+  /**
+    * Loads config data of areas and sensors
+    */
+  def getConfiguredAreas: Either[ConfigReaderFailures, Areas] = {
+
+    val config: Config = ConfigFactory.load()
+    loadConfig[Areas](config, "app.sensors")
+  }
+
+  /**
+    * Loads sensor by it's defined driver
+    */
+  def loadSensorByDriver(sensor: Map[String, String], areaKey: String) = {
+
+    val sensorId = areaKey + sensor("sensor-id").capitalize
+
+    sensor("sensor-driver") match {
+      case "dummySensor" =>
+        val dummySensor: ActorRef = context.actorOf(DummySensor.props(sensorId), sensorId)
+        dummySensor ! InitSensor
+        printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" initializing..")
+      case _ => printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" not loaded. Driver not supported!")
+    }
   }
 }

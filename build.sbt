@@ -27,5 +27,6 @@ libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-http" % elastic4sVersion,
   "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test",
   "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test",
-  "com.github.nscala-time" %% "nscala-time" % "2.18.0"
+  "com.github.nscala-time" %% "nscala-time" % "2.18.0",
+  "com.github.pureconfig" %% "pureconfig" % "0.9.0"
 )

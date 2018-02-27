@@ -50,7 +50,7 @@ class DummySensor(sensorName: String) extends Actor {
       }
 
   def pushDataUpstream(sender: ActorRef): Unit = {
-    implicit val materializer = ActorMaterializer()
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
 
     randomIntSource
       .via(throttlingFlow)
