@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import cakesolutions.kafka.akka.KafkaConsumerActor.Confirm
 import cakesolutions.kafka.akka.ConsumerRecords
 import lv.arvissk.governor.base.modules.sensors.SensorsProtocol.TimestampedReading
-import lv.arvissk.governor.base.modules.processing.ProcessingProtocol.saveTemperatureToElastic
+import lv.arvissk.governor.base.modules.processing.ProcessingProtocol.saveReadingToElastic
 
 import scala.util.{Failure, Success}
 
@@ -40,7 +40,7 @@ class KafkaReceiver extends Actor {
 
     context.actorSelection("/user/moduleHandler/Processing").resolveOne().onComplete {
       case Success(processingHandler) =>
-        records.foreach (x => processingHandler ! saveTemperatureToElastic(x._2))
+        records.foreach (x => processingHandler ! saveReadingToElastic(x._2))
       case Failure(error) => println(error)
     }
 

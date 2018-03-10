@@ -19,6 +19,7 @@ import lv.arvissk.governor.base.modules.ModuleProtocol.ModuleStartupSuccessCallb
 import lv.arvissk.governor.base.modules.logging.JsonDeserializer
 import lv.arvissk.governor.base.modules.sensors.SensorsProtocol.TimestampedReading
 import lv.arvissk.governor.base.modules.logging.LoggingProtocol._
+import java.time.Instant
 
 object ProcessingProtocol {
 
@@ -30,7 +31,7 @@ object ProcessingProtocol {
 
   case object ProcessSensorReadings
 
-  case class saveTemperatureToElastic(reading: TimestampedReading)
+  case class saveReadingToElastic(reading: TimestampedReading)
 
 }
 
@@ -56,7 +57,7 @@ class ProcessingHandler() extends Actor {
 
       kafkaConsumerActor ! Subscribe.AutoPartition(List("sensorReadings"))
 
-    case saveTemperatureToElastic(reading: TimestampedReading) =>
+    case saveReadingToElastic(reading: TimestampedReading) =>
 
       val indexName = reading.name + "-log-" + this.currentDayTimestamp
 
@@ -65,8 +66,12 @@ class ProcessingHandler() extends Actor {
       }
 
       client.execute {
-        indexInto(indexName / reading.sensorName)
-          .fields(reading.name -> reading.value, "timestamp" -> reading.timestamp)
+        indexInto(indexName / "readings")
+          .fields(
+            "value" -> reading.value,
+            "type" -> reading.name,
+            "datetime" -> Instant.ofEpochMilli(reading.timestamp),
+            "sensorName" -> reading.sensorName)
           .refresh(RefreshPolicy.IMMEDIATE)
       }
   }
