@@ -27,6 +27,8 @@ class LoggingHandler() extends Actor {
 
     case LogTimestampedSensorReading(reading: TimestampedReading) =>
 
+      //DEBUG DATA PRINT FOR LOGGED READING TODO: Remove
+      println(reading)
       def uuid = java.util.UUID.randomUUID.toString
 
       kafkaProducerActor ! ProducerRecords(List(KafkaProducerRecord("sensorReadings", uuid, reading)))

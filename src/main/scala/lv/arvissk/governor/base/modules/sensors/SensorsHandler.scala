@@ -17,6 +17,7 @@ import pureconfig.error.ConfigReaderFailures
 import lv.arvissk.governor.base.console.output.PrinterProtocol.PrintDecoratedEventToConsole
 import lv.arvissk.governor.base.modules.ModuleProtocol._
 import lv.arvissk.governor.base.modules.logging.LoggingProtocol._
+import lv.arvissk.governor.base.modules.sensors.drivers._
 
 object SensorsProtocol {
 
@@ -106,9 +107,13 @@ class SensorsHandler(printerActor: ActorRef) extends Actor {
     val sensorId = areaKey + sensor("sensor-id").capitalize
 
     sensor("sensor-driver") match {
-      case "dummySensor" =>
-        val dummySensor: ActorRef = context.actorOf(DummySensor.props(sensorId), sensorId)
-        dummySensor ! InitSensor
+      case "dummyTemperatureSensor" =>
+        val dummyTemperatureSensor: ActorRef = context.actorOf(DummyTemperatureSensor.props(sensorId), sensorId)
+        dummyTemperatureSensor ! InitSensor
+        printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" initializing..")
+      case "dummyHumiditySensor" =>
+        val dummyHumiditySensor: ActorRef = context.actorOf(DummyHumiditySensor.props(sensorId), sensorId)
+        dummyHumiditySensor ! InitSensor
         printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" initializing..")
       case _ => printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" not loaded. Driver not supported!")
     }

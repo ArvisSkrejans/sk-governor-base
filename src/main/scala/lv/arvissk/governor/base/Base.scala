@@ -8,6 +8,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Await
 import lv.arvissk.governor.base.modules._
 import lv.arvissk.governor.base.console.output._
+import lv.arvissk.governor.base.debug._
 
 object Base extends App {
 
@@ -31,7 +32,10 @@ object Base extends App {
   appInfoProvider ! GiveInitialWelcome
   appInfoProvider ! NotifyModuleInit
   moduleHandler ! InitAllModules
-
+  //DEBUG FOR ACTOR SYSTEM TREE
+  Thread.sleep(5000)
+  val res = new PrivateMethodExposer(system)('printTree)()
+  println(res)
   //handle graceful app and module shutdown
   scala.sys.addShutdownHook {
 
