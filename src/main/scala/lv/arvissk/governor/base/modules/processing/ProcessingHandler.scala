@@ -3,17 +3,17 @@
   */
 package lv.arvissk.governor.base.modules.processing
 
-import akka.actor._
-import org.apache.kafka.common.serialization._
+import akka.actor.{Props, Actor, ActorRef}
 import cakesolutions.kafka.akka._
 import cakesolutions.kafka.akka.KafkaConsumerActor._
-import com.typesafe.config._
+import com.typesafe.config.ConfigFactory
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.index.admin._
 import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.RefreshPolicy
 import com.github.nscala_time.time.Imports._
+import org.apache.kafka.common.serialization._
 import org.apache.kafka.common.serialization.{Deserializer, Serializer, StringDeserializer, StringSerializer}
 import lv.arvissk.governor.base.modules.ModuleProtocol.ModuleStartupSuccessCallback
 import lv.arvissk.governor.base.modules.logging.JsonDeserializer

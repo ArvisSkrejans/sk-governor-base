@@ -1,4 +1,6 @@
-
+/**
+  * Application base class that manages actor system and app logic flow and init.
+  **/
 package lv.arvissk.governor.base
 
 import akka.actor._

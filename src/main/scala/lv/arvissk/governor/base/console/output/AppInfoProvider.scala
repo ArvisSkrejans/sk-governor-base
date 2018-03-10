@@ -1,10 +1,11 @@
-/*
-* Actor that provides useful app console info.
-*/
+/**
+  * Actor that provides useful app console info.
+  */
 package lv.arvissk.governor.base.console.output
 
 import akka.actor.{Actor, ActorRef, Props}
 import lv.arvissk.governor.base.console.output.PrinterProtocol.{PrintDecoratedEventToConsole, PrintToConsole}
+import com.typesafe.config.ConfigFactory
 
 object AppInfoProtocol {
 
@@ -26,8 +27,12 @@ class AppInfoProvider(printerActor: ActorRef) extends Actor {
 
   import AppInfoProtocol._
 
+  def appVersion: String = {
+    ConfigFactory.load().getString("app.stats.version")
+  }
+
   val systemMessages: Map[String, String] = Map(
-    "initialWelcome" -> "SK-Governor 0.1 started",
+    "initialWelcome" -> "SK-Governor ".concat(appVersion).concat(" started"),
     "shutdownInitMessage" -> "SK-Governor shut down started..",
     "shutdownCompleteMessage" -> "SK-Governor shut down complete.",
     "moduleInit" -> "Initializing modules..",

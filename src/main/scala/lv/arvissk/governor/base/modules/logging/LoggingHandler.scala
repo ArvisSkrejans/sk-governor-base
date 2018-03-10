@@ -3,13 +3,13 @@
   */
 package lv.arvissk.governor.base.modules.logging
 
-import akka.actor._
+import akka.actor.{Actor, ActorRef, ActorLogging}
 import cakesolutions.kafka.akka._
 import cakesolutions.kafka._
-import com.typesafe.config._
-import org.apache.kafka.common.serialization._
+import com.typesafe.config.ConfigFactory
+import org.apache.kafka.common.serialization.StringSerializer
 import lv.arvissk.governor.base.modules.ModuleProtocol.ModuleStartupSuccessCallback
-import lv.arvissk.governor.base.modules.sensors.SensorsProtocol._
+import lv.arvissk.governor.base.modules.sensors.SensorsProtocol.TimestampedReading
 
 
 class LoggingHandler() extends Actor {

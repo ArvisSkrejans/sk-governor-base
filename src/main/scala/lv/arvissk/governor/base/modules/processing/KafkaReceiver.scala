@@ -1,7 +1,9 @@
-
+/**
+  * Class to help receive data, process and send it to Kafka for temp storage.
+  */
 package lv.arvissk.governor.base.modules.processing
 
-import akka.actor._
+import akka.actor.{Props, Actor}
 import akka.util.Timeout
 import scala.util.{Success, Failure}
 import scala.concurrent._
@@ -9,7 +11,6 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import cakesolutions.kafka.akka.KafkaConsumerActor.Confirm
 import cakesolutions.kafka.akka.ConsumerRecords
-import lv.arvissk.governor.base.modules.logging.LoggingProtocol.LogTimestampedSensorReading
 import lv.arvissk.governor.base.modules.sensors.SensorsProtocol.TimestampedReading
 import lv.arvissk.governor.base.modules.processing.ProcessingProtocol.saveTemperatureToElastic
 

@@ -3,7 +3,7 @@
   **/
 package lv.arvissk.governor.base.modules.sensors
 
-import akka.actor._
+import akka.actor.{Props, Actor, ActorRef}
 import akka.stream._
 import akka.stream.scaladsl._
 import scala.concurrent._

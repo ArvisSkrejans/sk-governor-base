@@ -3,11 +3,11 @@
   */
 package lv.arvissk.governor.base.modules.logging
 
-import akka.actor._
+import akka.actor.Props
 import java.util
 import org.apache.kafka.common.serialization.{Deserializer, Serializer, StringDeserializer, StringSerializer}
 import play.api.libs.json.{Format, Json, Reads, Writes}
-import lv.arvissk.governor.base.modules.sensors.SensorsProtocol._
+import lv.arvissk.governor.base.modules.sensors.SensorsProtocol.TimestampedReading
 
 object LoggingProtocol {
 

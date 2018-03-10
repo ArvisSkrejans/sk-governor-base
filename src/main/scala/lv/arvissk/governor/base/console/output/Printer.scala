@@ -1,10 +1,9 @@
-/*
-* Actor that prints to console and logs when needed.
-*/
-
+/**
+  * Actor that prints to console and logs when needed.
+  */
 package lv.arvissk.governor.base.console.output
 
-import akka.actor._
+import akka.actor.{Props, Actor, ActorLogging}
 
 
 object PrinterProtocol {

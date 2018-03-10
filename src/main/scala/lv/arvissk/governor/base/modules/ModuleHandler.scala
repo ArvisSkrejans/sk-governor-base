@@ -3,7 +3,7 @@
   **/
 package lv.arvissk.governor.base.modules
 
-import akka.actor._
+import akka.actor.{ActorRef, Props, Actor}
 import scala.language.postfixOps
 import lv.arvissk.governor.base.console.output.PrinterProtocol.PrintDecoratedEventToConsole
 import lv.arvissk.governor.base.modules.sensors._
