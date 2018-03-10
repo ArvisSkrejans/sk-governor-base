@@ -1,4 +1,4 @@
-enablePlugins(DebianPlugin, DebianDeployPlugin)
+enablePlugins(JavaAppPackaging)
 
 name := "sk-governor-base"
 
