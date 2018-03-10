@@ -1,6 +1,18 @@
+enablePlugins(DebianPlugin, DebianDeployPlugin)
+
 name := "sk-governor-base"
 
 version := "0.1"
+
+maintainer := "Arvis Skrējāns <arvis.skrejans@gmail.com>"
+
+packageSummary := "SK Governor base system for sensor data logging"
+
+packageDescription := "Platform for various sensor data logging and pushing to Elasticsearch with Kafka. This is the base package daemon for all backend services."
+
+debianNativeBuildOptions in Debian := Nil
+
+debianNativeBuildOptions in Debian := Seq("-Zgzip", "-z3")
 
 scalaVersion := "2.12.4"
 
