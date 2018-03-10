@@ -17,47 +17,24 @@ object DummyTemperatureSensor {
 
 }
 
-class DummyTemperatureSensor(sensorName: String) extends Actor {
+class DummyTemperatureSensor(sensorName: String) extends GenericSensor {
 
   import SensorsProtocol._
 
 
-  def receive = {
+  override def receive = {
     case InitSensor =>
       sender ! SensorInitSuccessful(sensorName)
       pushDataUpstream(sender)
   }
 
-  def sensorPushSink(sender: ActorRef) =
-    Flow[TimestampedReading]
-      .buffer(1, OverflowStrategy.dropBuffer)
-      .delay(1 seconds, DelayOverflowStrategy.backpressure)
-      .to(Sink.foreach(e => sender ! PushInitializedSensorDataToLog(e)))
-
-  def randomIntSource =
+  override def sensorDataSource =
     Source.fromIterator(() => Iterator.continually(Random.nextInt(35)))
 
-  def throttlingFlow = Flow[Int].throttle(
-    elements = 1,
-    per = 1.second,
-    maximumBurst = 0,
-    mode = ThrottleMode.Shaping
-  )
-
-  def processStream =
+  override def processStream =
     Flow[Int]
       .map { e =>
         TimestampedReading("temperature", e, System.currentTimeMillis(), sensorName)
       }
-
-  def pushDataUpstream(sender: ActorRef): Unit = {
-    implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-    randomIntSource
-      .via(throttlingFlow)
-      .via(processStream)
-      .to(sensorPushSink(sender))
-      .run()
-  }
 
 }
