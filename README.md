@@ -14,6 +14,7 @@ Universal "smart <anything>" back-end governor modules. Self-educational Scala/A
 
 - AKKA Actor system that initializes sensors based on defined config.
 - Sample setup for testing - two dummy temperature and humidity sensor drivers. Config has template layout using these sensors for various rooms.
+- Implemented first real sensor drivers - DHT-11 based temperature and humidity on ESP-01 based webserver. HTTP/JSON based.
 - Data is saved in Kafka (requires a running instance).
 - Background task processes data and sends it to Elasticsearch for seperate temperature and humidity daily logs.
 
