@@ -5,16 +5,17 @@ package lv.arvissk.governor.base.modules.sensors.drivers
 
 import lv.arvissk.governor.base.modules.sensors.SensorsProtocol
 
-import akka.actor._
+import akka.actor.{Actor, ActorRef}
 import akka.stream._
 import akka.stream.scaladsl._
 import scala.concurrent._
 import scala.concurrent.duration._
-import lv.arvissk.governor.base.modules.sensors.SensorsProtocol
 
-abstract class GenericSensor extends Actor {
+abstract class GenericSensor(sensorName: String) extends Actor {
 
   import SensorsProtocol._
+
+  val readingType = "genericSensorReading"
 
   def receive = {
     case InitSensor =>
@@ -33,15 +34,15 @@ abstract class GenericSensor extends Actor {
 
   def throttlingFlow = Flow[Int].throttle(
     elements = 1,
-    per = 1.second,
+    per = 30.second,
     maximumBurst = 0,
     mode = ThrottleMode.Shaping
   )
 
   def processStream =
     Flow[Int]
-      .map { e =>
-        TimestampedReading("genericSensorReading", e, System.currentTimeMillis(), "genericSensor")
+      .map { e: Int =>
+        TimestampedReading(readingType, e, System.currentTimeMillis(), sensorName)
       }
 
   def pushDataUpstream(sender: ActorRef): Unit = {

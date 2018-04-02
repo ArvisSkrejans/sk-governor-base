@@ -110,12 +110,24 @@ class SensorsHandler(printerActor: ActorRef) extends Actor {
       case "dummyTemperatureSensor" =>
         val dummyTemperatureSensor: ActorRef = context.actorOf(DummyTemperatureSensor.props(sensorId), sensorId)
         dummyTemperatureSensor ! InitSensor
-        printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" initializing..")
+        printSensorStatus(sensorId)
       case "dummyHumiditySensor" =>
         val dummyHumiditySensor: ActorRef = context.actorOf(DummyHumiditySensor.props(sensorId), sensorId)
         dummyHumiditySensor ! InitSensor
-        printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" initializing..")
+        printSensorStatus(sensorId)
+      case "esp01Dht11HttpTemperatureSensor" =>
+        val esp01Dht11HttpTemperatureSensor: ActorRef = context.actorOf(Esp01Dht11HttpTemperatureSensor.props(sensorId, sensor("sensor-ip"), sensor("sensor-port"), 60, 0), sensorId)
+        esp01Dht11HttpTemperatureSensor ! InitSensor
+        printSensorStatus(sensorId)
+      case "esp01Dht11HttpHumiditySensor" =>
+        val esp01Dht11HttpHumiditySensor: ActorRef = context.actorOf(Esp01Dht11HttpHumiditySensor.props(sensorId, sensor("sensor-ip"), sensor("sensor-port"), 60, 30), sensorId)
+        esp01Dht11HttpHumiditySensor ! InitSensor
+        printSensorStatus(sensorId)
       case _ => printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" not loaded. Driver not supported!")
     }
+  }
+
+  def printSensorStatus(sensorId : String) = {
+    printerActor ! PrintDecoratedEventToConsole("Sensor: \"" + sensorId + "\" initializing..")
   }
 }

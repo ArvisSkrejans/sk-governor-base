@@ -17,7 +17,7 @@ object DummyTemperatureSensor {
 
 }
 
-class DummyTemperatureSensor(sensorName: String) extends GenericSensor {
+class DummyTemperatureSensor(sensorName: String) extends GenericSensor(sensorName: String) {
 
   import SensorsProtocol._
 
@@ -33,7 +33,7 @@ class DummyTemperatureSensor(sensorName: String) extends GenericSensor {
 
   override def processStream =
     Flow[Int]
-      .map { e =>
+      .map { e: Int =>
         TimestampedReading("temperature", e, System.currentTimeMillis(), sensorName)
       }
 

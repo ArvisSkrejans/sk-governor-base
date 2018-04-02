@@ -17,9 +17,11 @@ object DummyHumiditySensor {
 
 }
 
-class DummyHumiditySensor(sensorName: String) extends GenericSensor {
+class DummyHumiditySensor(sensorName: String) extends GenericSensor(sensorName: String) {
 
   import SensorsProtocol._
+
+  override val readingType = "humidity"
 
   override def receive = {
     case InitSensor =>
@@ -29,11 +31,5 @@ class DummyHumiditySensor(sensorName: String) extends GenericSensor {
 
   override def sensorDataSource =
     Source.fromIterator(() => Iterator.continually(Random.nextInt(35)))
-
-  override def processStream =
-    Flow[Int]
-      .map { e =>
-        TimestampedReading("humidity", e, System.currentTimeMillis(), sensorName)
-      }
 
 }

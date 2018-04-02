@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
   "com.typesafe.akka" %% "akka-stream" % "2.5.9",
+  "com.typesafe.akka" %% "akka-http" % "10.1.0",
   "net.cakesolutions" %% "scala-kafka-client" % "1.0.0",
   "net.cakesolutions" %% "scala-kafka-client-akka" % "1.0.0",
   "net.cakesolutions" %% "scala-kafka-client-testkit" % "1.0.0" % "test",
@@ -40,5 +41,6 @@ libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test",
   "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % "test",
   "com.github.nscala-time" %% "nscala-time" % "2.18.0",
-  "com.github.pureconfig" %% "pureconfig" % "0.9.0"
+  "com.github.pureconfig" %% "pureconfig" % "0.9.0",
+  "net.liftweb" %% "lift-json" % "3.2.0"
 )
